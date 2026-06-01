@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Pin, Archive, ArchiveRestore, Trash2, Edit, Calendar, Tag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { NOTE_COLORS } from '@/types';
+import { getPlainTextFromContent } from '@/lib/rich-text';
 
 interface NoteCardProps {
   note: Note;
@@ -36,9 +37,10 @@ export function NoteCard({
     }, 300);
   };
 
-  const contentPreview = note.content.length > 100
-    ? note.content.substring(0, 100) + '...'
-    : note.content;
+  const plainContent = getPlainTextFromContent(note.content);
+  const contentPreview = plainContent.length > 100
+    ? plainContent.substring(0, 100) + '...'
+    : plainContent;
 
   return (
     <Card

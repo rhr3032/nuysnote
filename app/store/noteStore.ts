@@ -4,6 +4,7 @@ import { Note, NoteStore, NoteColor } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns';
 import { saveToStorage, loadFromStorage } from '@/lib/storage';
+import { getPlainTextFromContent } from '@/lib/rich-text';
 
 interface NoteStoreState extends NoteStore {
   // Computed properties
@@ -35,7 +36,7 @@ function computeFilteredNotes(notes: Note[], searchQuery: string, selectedTags: 
     filtered = filtered.filter(
       (note) =>
         note.title.toLowerCase().includes(query) ||
-        note.content.toLowerCase().includes(query) ||
+        getPlainTextFromContent(note.content).toLowerCase().includes(query) ||
         note.tags.some((tag) => tag.toLowerCase().includes(query))
     );
   }

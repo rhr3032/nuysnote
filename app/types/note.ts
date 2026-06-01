@@ -42,12 +42,12 @@ export interface NoteStore {
 }
 
 export const NOTE_COLORS: Record<NoteColor, string> = {
-  yellow: 'bg-[#fff7c2] border-[#e5d575] text-[#3a3412]',
-  blue: 'bg-[#dbeafe] border-[#93c5fd] text-[#17324f]',
-  green: 'bg-[#dcfce7] border-[#86efac] text-[#134e32]',
-  red: 'bg-[#fee2e2] border-[#fca5a5] text-[#5f1f1f]',
-  purple: 'bg-[#ede9fe] border-[#c4b5fd] text-[#3b245f]',
-  pink: 'bg-[#fce7f3] border-[#f9a8d4] text-[#5f2144]',
-  orange: 'bg-[#ffedd5] border-[#fdba74] text-[#5e3214]',
-  gray: 'bg-[#f4f4f5] border-[#d4d4d8] text-[#27272a]',
+  yellow: 'bg-gradient-to-br from-amber-100 via-yellow-100 to-amber-200 border-amber-300 text-amber-950',
+  blue: 'bg-gradient-to-br from-sky-100 via-blue-100 to-cyan-200 border-sky-300 text-slate-950',
+  green: 'bg-gradient-to-br from-emerald-100 via-green-100 to-lime-200 border-emerald-300 text-emerald-950',
+  red: 'bg-gradient-to-br from-rose-100 via-red-100 to-orange-100 border-rose-300 text-rose-950',
+  purple: 'bg-gradient-to-br from-violet-100 via-purple-100 to-fuchsia-200 border-violet-300 text-violet-950',
+  pink: 'bg-gradient-to-br from-pink-100 via-rose-100 to-pink-200 border-pink-300 text-pink-950',
+  orange: 'bg-gradient-to-br from-orange-100 via-amber-100 to-yellow-100 border-orange-300 text-orange-950',
+  gray: 'bg-gradient-to-br from-slate-100 via-zinc-100 to-stone-200 border-slate-300 text-slate-950',
 };

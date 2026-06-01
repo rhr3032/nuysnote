@@ -28,6 +28,8 @@ import { Button } from '@/components/note/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/note/ui/card';
 import { Input } from '@/components/note/ui/input';
 import { NoteList } from '@/components/note/note-list';
+import { RichTextEditor } from '@/components/note/rich-text-editor';
+import { getPlainTextFromContent, hasMeaningfulContent } from '@/lib/rich-text';
 import { NOTE_COLORS, Note, NoteColor } from '@/types';
 import { useNoteStore } from '@/store/noteStore';
 import { cn } from '@/lib/utils';
@@ -130,6 +132,7 @@ export default function Home() {
   const [collection, setCollection] = useState<CollectionFilter>('active');
   const [draft, setDraft] = useState<DraftNote>(defaultDraft);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editorKey, setEditorKey] = useState(0);
   const [tagInput, setTagInput] = useState('');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -188,9 +191,10 @@ export default function Home() {
 
     const matchesSearch = (note: Note) => {
       if (!normalizedQuery) return true;
+      const noteContent = getPlainTextFromContent(note.content);
       return (
         note.title.toLowerCase().includes(normalizedQuery) ||
-        note.content.toLowerCase().includes(normalizedQuery) ||
+        noteContent.toLowerCase().includes(normalizedQuery) ||
         note.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery))
       );
     };
@@ -223,6 +227,7 @@ export default function Home() {
     setDraft(defaultDraft());
     setEditingNoteId(null);
     setTagInput('');
+    setEditorKey((current) => current + 1);
   };
 
   const addTagsFromInput = (value: string) => {
@@ -244,7 +249,7 @@ export default function Home() {
     event.preventDefault();
 
     const title = draft.title.trim();
-    const content = draft.content.trim();
+    const content = draft.content;
     const payload = {
       title,
       content,
@@ -255,7 +260,7 @@ export default function Home() {
       images: draft.images,
     };
 
-    if (!title && !content && payload.tags.length === 0 && payload.images.length === 0) {
+    if (!title && !hasMeaningfulContent(content) && payload.tags.length === 0 && payload.images.length === 0) {
       setStatusMessage('Add a title, text, tag, or image before saving');
       return;
     }
@@ -273,6 +278,7 @@ export default function Home() {
 
   const handleEdit = (note: Note) => {
     setEditingNoteId(note.id);
+    setEditorKey((current) => current + 1);
     setDraft({
       title: note.title,
       content: note.content,
@@ -587,11 +593,11 @@ export default function Home() {
                         placeholder="Note title"
                         className="h-12 rounded-2xl border-slate-200 bg-slate-50/80 text-base"
                       />
-                      <textarea
+                      <RichTextEditor
+                        key={editorKey}
                         value={draft.content}
-                        onChange={(event) => setDraft((current) => ({ ...current, content: event.target.value }))}
+                        onChange={(value) => setDraft((current) => ({ ...current, content: value }))}
                         placeholder="Start writing your note..."
-                        className="min-h-55 w-full rounded-3xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
                       />
                     </div>
 
@@ -690,11 +696,11 @@ export default function Home() {
                               className={cn(
                                 'group flex flex-col items-center gap-2 rounded-2xl border px-2 py-3 text-xs transition',
                                 draft.color === option.value
-                                  ? 'border-slate-900 bg-white text-slate-950 shadow-sm'
-                                  : 'border-slate-200 bg-white/80 text-slate-500 hover:border-slate-300'
+                                  ? 'border-slate-950 bg-white text-slate-950 shadow-md shadow-slate-200/70 ring-2 ring-slate-950/10'
+                                  : 'border-slate-200 bg-white/80 text-slate-500 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm'
                               )}
                             >
-                              <span className={cn('h-5 w-5 rounded-full border', NOTE_COLORS[option.value])} />
+                              <span className={cn('h-7 w-7 rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]', NOTE_COLORS[option.value])} />
                               {option.label}
                             </button>
                           ))}
