@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 interface NoteListProps {
   notes: Note[];
   viewMode: 'grid' | 'list';
+  onView: (note: Note) => void;
   onEdit: (note: Note) => void;
   onDelete: (id: string) => void;
   onArchive: (id: string) => void;
@@ -19,6 +20,7 @@ interface NoteListProps {
 export function NoteList({
   notes,
   viewMode,
+  onView,
   onEdit,
   onDelete,
   onArchive,
@@ -41,11 +43,12 @@ export function NoteList({
 
   if (viewMode === 'grid') {
     return (
-      <div className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3', className)}>
+      <div className={cn('grid grid-cols-1 items-start gap-4 sm:grid-cols-2 xl:grid-cols-3', className)}>
         {notes.map((note) => (
           <NoteCard
             key={note.id}
             note={note}
+            onView={onView}
             onEdit={onEdit}
             onDelete={onDelete}
             onArchive={onArchive}
@@ -64,6 +67,7 @@ export function NoteList({
         <NoteCard
           key={note.id}
           note={note}
+          onView={onView}
           onEdit={onEdit}
           onDelete={onDelete}
           onArchive={onArchive}

@@ -9,6 +9,7 @@ import {
   CloudOff,
   Download,
   FolderOpen,
+  Eye,
   Grid2x2,
   ImagePlus,
   LayoutList,
@@ -133,6 +134,7 @@ export default function Home() {
   const [draft, setDraft] = useState<DraftNote>(defaultDraft);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editorKey, setEditorKey] = useState(0);
+  const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [tagInput, setTagInput] = useState('');
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>('');
@@ -279,6 +281,7 @@ export default function Home() {
   const handleEdit = (note: Note) => {
     setEditingNoteId(note.id);
     setEditorKey((current) => current + 1);
+    setViewingNote(null);
     setDraft({
       title: note.title,
       content: note.content,
@@ -291,6 +294,10 @@ export default function Home() {
     setTagInput('');
     setStatusMessage('Editing note');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleView = (note: Note) => {
+    setViewingNote(note);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -796,6 +803,7 @@ export default function Home() {
                   <NoteList
                     notes={visibleNotes}
                     viewMode={viewMode}
+                    onView={handleView}
                     onEdit={handleEdit}
                     onDelete={deleteNote}
                     onArchive={archiveNote}
@@ -810,6 +818,7 @@ export default function Home() {
                     <NoteList
                       notes={pinnedNotes}
                       viewMode={viewMode}
+                      onView={handleView}
                       onEdit={handleEdit}
                       onDelete={deleteNote}
                       onArchive={archiveNote}
@@ -829,6 +838,7 @@ export default function Home() {
                     <NoteList
                       notes={regularNotes}
                       viewMode={viewMode}
+                      onView={handleView}
                       onEdit={handleEdit}
                       onDelete={deleteNote}
                       onArchive={archiveNote}
@@ -845,6 +855,77 @@ export default function Home() {
           </section>
         </div>
       </div>
+
+      {viewingNote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-sm">
+          <div className="absolute inset-0" onClick={() => setViewingNote(null)} aria-hidden="true" />
+          <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)]">
+            <div className={cn('border-b px-6 py-5', viewingNote.color ? NOTE_COLORS[viewingNote.color] : 'bg-white')}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.24em] text-slate-500">
+                    <Eye className="h-4 w-4" />
+                    Read note
+                  </div>
+                  <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+                    {viewingNote.title || 'Untitled Note'}
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Updated {viewingNote.updatedAt.toLocaleString([], {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })}
+                  </p>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setViewingNote(null)} className="rounded-full bg-white/70">
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="max-h-[75vh] overflow-y-auto px-6 py-5">
+              {getPlainTextFromContent(viewingNote.content) ? (
+                <div className="whitespace-pre-wrap text-sm leading-7 text-slate-800">
+                  {getPlainTextFromContent(viewingNote.content)}
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">This note has no text content.</p>
+              )}
+
+              {viewingNote.images?.length ? (
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {viewingNote.images.map((image, index) => (
+                    <div key={`${image}-${index}`} className="relative aspect-video overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                      <Image src={image} alt={`${viewingNote.title || 'Note'} attachment ${index + 1}`} fill className="object-cover" unoptimized />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {viewingNote.tags.length > 0 && (
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {viewingNote.tags.map((tag) => (
+                    <span key={tag} className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700">
+                      <Tag className="h-3.5 w-3.5" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
+                <Button variant="outline" onClick={() => { setViewingNote(null); handleEdit(viewingNote); }} className="gap-2 rounded-full border-slate-200">
+                  <List className="h-4 w-4" />
+                  Edit note
+                </Button>
+                <Button variant="outline" onClick={() => setViewingNote(null)} className="gap-2 rounded-full border-slate-200">
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
