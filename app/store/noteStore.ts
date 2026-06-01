@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Note, NoteStore, NoteColor } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { format, isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns';
+import { isToday, isYesterday, isThisWeek, isThisMonth } from 'date-fns';
 import { saveToStorage, loadFromStorage } from '@/lib/storage';
 
 interface NoteStoreState extends NoteStore {
@@ -18,6 +18,45 @@ const colorPalette: NoteColor[] = [
   'yellow', 'blue', 'green', 'red', 'purple', 'pink', 'orange', 'gray'
 ];
 
+function commitNotes(state: NoteStoreState, notes: Note[]) {
+  saveToStorage(notes);
+  return {
+    notes,
+    filteredNotes: computeFilteredNotes(notes, state.searchQuery, state.selectedTags)
+  };
+}
+
+function computeFilteredNotes(notes: Note[], searchQuery: string, selectedTags: string[]): Note[] {
+  let filtered = notes.filter(note => !note.isArchived);
+
+  // Apply search
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filtered = filtered.filter(
+      (note) =>
+        note.title.toLowerCase().includes(query) ||
+        note.content.toLowerCase().includes(query) ||
+        note.tags.some((tag) => tag.toLowerCase().includes(query))
+    );
+  }
+
+  // Apply tag filters
+  if (selectedTags.length > 0) {
+    filtered = filtered.filter((note) =>
+      selectedTags.every((tag) => note.tags.includes(tag))
+    );
+  }
+
+  // Sort: pinned notes first, then by updated date (newest first)
+  filtered.sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return b.updatedAt.getTime() - a.updatedAt.getTime();
+  });
+
+  return filtered;
+}
+
 export const useNoteStore = create<NoteStoreState>()(
   persist(
     (set, get) => ({
@@ -26,9 +65,7 @@ export const useNoteStore = create<NoteStoreState>()(
       searchQuery: '',
       selectedTags: [],
       viewMode: 'grid',
-
-      // Computed properties
-      filteredNotes: computedFilteredNotes(get),
+      filteredNotes: [], // Will be updated when state changes
 
       getAllTags: () => {
         const { notes } = get();
@@ -38,7 +75,6 @@ export const useNoteStore = create<NoteStoreState>()(
 
       getNotesByDateRange: (dateRange) => {
         const { notes } = get();
-        const now = new Date();
 
         switch (dateRange) {
           case 'today':
@@ -62,6 +98,7 @@ export const useNoteStore = create<NoteStoreState>()(
       addNote: (noteData) => {
         const newNote: Note = {
           ...noteData,
+          color: noteData.color ?? colorPalette[0],
           id: uuidv4(),
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -69,8 +106,7 @@ export const useNoteStore = create<NoteStoreState>()(
 
         set((state) => {
           const updatedNotes = [newNote, ...state.notes];
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
@@ -81,16 +117,14 @@ export const useNoteStore = create<NoteStoreState>()(
               ? { ...note, ...updates, updatedAt: new Date() }
               : note
           );
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
       deleteNote: (id) => {
         set((state) => {
           const updatedNotes = state.notes.filter((note) => note.id !== id);
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
@@ -99,8 +133,7 @@ export const useNoteStore = create<NoteStoreState>()(
           const updatedNotes = state.notes.map((note) =>
             note.id === id ? { ...note, isArchived: true, updatedAt: new Date() } : note
           );
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
@@ -109,8 +142,7 @@ export const useNoteStore = create<NoteStoreState>()(
           const updatedNotes = state.notes.map((note) =>
             note.id === id ? { ...note, isArchived: false, updatedAt: new Date() } : note
           );
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
@@ -119,8 +151,7 @@ export const useNoteStore = create<NoteStoreState>()(
           const updatedNotes = state.notes.map((note) =>
             note.id === id ? { ...note, isPinned: true, updatedAt: new Date() } : note
           );
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
@@ -129,14 +160,34 @@ export const useNoteStore = create<NoteStoreState>()(
           const updatedNotes = state.notes.map((note) =>
             note.id === id ? { ...note, isPinned: false, updatedAt: new Date() } : note
           );
-          saveToStorage(updatedNotes);
-          return { notes: updatedNotes };
+          return commitNotes(state, updatedNotes);
         });
       },
 
-      setSearchQuery: (query) => set({ searchQuery: query }, true),
+      replaceNotes: (notes) => {
+        set((state) => commitNotes(state, notes));
+      },
 
-      setSelectedTags: (tags) => set({ selectedTags: tags }, true),
+      syncFromStorage: () => {
+        set((state) => {
+          const storedNotes = loadFromStorage();
+          return commitNotes(state, storedNotes);
+        });
+      },
+
+      setSearchQuery: (query) => {
+        set((state) => ({
+          searchQuery: query,
+          filteredNotes: computeFilteredNotes(state.notes, query, state.selectedTags)
+        }));
+      },
+
+      setSelectedTags: (tags) => {
+        set((state) => ({
+          selectedTags: tags,
+          filteredNotes: computeFilteredNotes(state.notes, state.searchQuery, tags)
+        }));
+      },
 
       setViewMode: (mode) => set({ viewMode: mode }),
 
@@ -146,56 +197,27 @@ export const useNoteStore = create<NoteStoreState>()(
           const newTags = isSelected
             ? state.selectedTags.filter(t => t !== tag)
             : [...state.selectedTags, tag];
-          return { selectedTags: newTags };
-        }, true);
+          return {
+            selectedTags: newTags,
+            filteredNotes: computeFilteredNotes(state.notes, state.searchQuery, newTags)
+          };
+        });
       },
     }),
     {
       name: 'nuysnote-storage',
       onRehydrateStorage: () => {
         return (state) => {
+          if (!state) return;
+
           // Load initial data from localStorage when store is hydrated
           const savedNotes = loadFromStorage();
           if (savedNotes.length > 0) {
             state.notes = savedNotes;
+            state.filteredNotes = computeFilteredNotes(savedNotes, state.searchQuery, state.selectedTags);
           }
         };
       },
     }
   )
 );
-
-// Helper function to compute filtered notes
-function computedFilteredNotes(state: NoteStoreState): Note[] {
-  let filtered = state.notes;
-
-  // Filter archived notes out by default
-  filtered = filtered.filter(note => !note.isArchived);
-
-  // Apply search
-  if (state.searchQuery) {
-    const query = state.searchQuery.toLowerCase();
-    filtered = filtered.filter(
-      (note) =>
-        note.title.toLowerCase().includes(query) ||
-        note.content.toLowerCase().includes(query) ||
-        note.tags.some((tag) => tag.toLowerCase().includes(query))
-    );
-  }
-
-  // Apply tag filters
-  if (state.selectedTags.length > 0) {
-    filtered = filtered.filter((note) =>
-      state.selectedTags.every((tag) => note.tags.includes(tag))
-    );
-  }
-
-  // Sort: pinned notes first, then by updated date (newest first)
-  filtered.sort((a, b) => {
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
-    return b.updatedAt.getTime() - a.updatedAt.getTime();
-  });
-
-  return filtered;
-}
