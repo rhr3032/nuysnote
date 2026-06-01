@@ -47,9 +47,9 @@ export function NoteCard({
 
   return (
     <Card
-      className={`group relative h-fit overflow-hidden rounded-[1.75rem] border bg-white/95 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl ${colorClass}`}
+      className={`group relative h-fit overflow-hidden rounded-[1.75rem] border bg-white/95 shadow-sm transition-all duration-300 ease-out transform-gpu motion-safe:hover:-translate-y-1 motion-safe:active:scale-[0.99] hover:shadow-xl ${colorClass}`}
     >
-      <div className="h-1 w-full bg-black/10 opacity-50" />
+      <div className="h-1 w-full bg-black/10 opacity-50 transition-opacity duration-300 group-hover:opacity-80" />
 
       <CardHeader className="space-y-3 pb-4">
         <div className="flex items-start justify-between gap-3">
@@ -66,7 +66,7 @@ export function NoteCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-slate-500 transition-colors duration-200 group-hover:text-slate-600">
           <Calendar className="h-3.5 w-3.5" />
           {formatDistanceToNow(note.updatedAt, { addSuffix: true })}
         </div>

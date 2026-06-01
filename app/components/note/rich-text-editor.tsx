@@ -103,7 +103,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'Start writing y
               aria-label={label}
               onClick={() => toggleInlineStyle(style)}
               className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition',
+                'inline-flex transform-gpu items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]',
                 active
                   ? 'border-slate-900 bg-slate-950 text-white shadow-sm'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950'
@@ -127,7 +127,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'Start writing y
               aria-label={label}
               onClick={() => toggleBlockType(targetBlockType)}
               className={cn(
-                'inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition',
+                'inline-flex transform-gpu items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]',
                 active
                   ? 'border-amber-300 bg-amber-100 text-slate-950 shadow-sm'
                   : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-950'
@@ -141,7 +141,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'Start writing y
       </div>
 
       <div
-        className="relative min-h-[16rem] rounded-3xl border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-900 transition focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100"
+        className="relative min-h-[16rem] rounded-3xl border border-slate-200 bg-slate-50/80 px-4 py-4 text-sm leading-7 text-slate-900 transition-all duration-200 ease-out focus-within:-translate-y-0.5 focus-within:border-amber-300 focus-within:ring-4 focus-within:ring-amber-100"
         onClick={() => editorRef.current?.focus()}
       >
         {!editorState.getCurrentContent().hasText() && !isFocused && (

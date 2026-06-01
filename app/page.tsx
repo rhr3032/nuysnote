@@ -396,18 +396,18 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-full border-slate-200 bg-white/90">
+              <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-full border-slate-200 bg-white/90 motion-safe:hover:-translate-y-0.5">
                 <Upload className="h-4 w-4" />
                 Import
               </Button>
-              <Button variant="outline" onClick={handleExport} className="gap-2 rounded-full border-slate-200 bg-white/90">
+              <Button variant="outline" onClick={handleExport} className="gap-2 rounded-full border-slate-200 bg-white/90 motion-safe:hover:-translate-y-0.5">
                 <Download className="h-4 w-4" />
                 Export
               </Button>
               <Button
                 variant="outline"
                 onClick={syncFromStorage}
-                className="gap-2 rounded-full border-slate-200 bg-white/90"
+                className="gap-2 rounded-full border-slate-200 bg-white/90 motion-safe:hover:-translate-y-0.5"
               >
                 {typeof navigator !== 'undefined' && navigator.onLine ? (
                   <Cloud className="h-4 w-4" />
@@ -462,7 +462,7 @@ export default function Home() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                      className="gap-2 rounded-full text-slate-600"
+                      className="gap-2 rounded-full text-slate-600 transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
                     >
                       {viewMode === 'grid' ? <List className="h-4 w-4" /> : <Grid2x2 className="h-4 w-4" />}
                       {viewMode === 'grid' ? 'List' : 'Grid'}
@@ -473,8 +473,8 @@ export default function Home() {
                       type="button"
                       onClick={() => setViewMode('grid')}
                       className={cn(
-                        'flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
-                        viewMode === 'grid' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'
+                        'flex flex-1 transform-gpu items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]',
+                        viewMode === 'grid' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:bg-white/80'
                       )}
                     >
                       <Grid2x2 className="h-4 w-4" />
@@ -484,8 +484,8 @@ export default function Home() {
                       type="button"
                       onClick={() => setViewMode('list')}
                       className={cn(
-                        'flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition',
-                        viewMode === 'list' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500'
+                        'flex flex-1 transform-gpu items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]',
+                        viewMode === 'list' ? 'bg-white text-slate-950 shadow-sm' : 'text-slate-500 hover:bg-white/80'
                       )}
                     >
                       <LayoutList className="h-4 w-4" />
@@ -503,7 +503,7 @@ export default function Home() {
                         setSearchQuery('');
                         setSelectedTags([]);
                       }}
-                      className="text-xs font-medium text-slate-500 transition hover:text-slate-950"
+                      className="text-xs font-medium text-slate-500 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:text-slate-950 active:scale-[0.98]"
                     >
                       Clear filters
                     </button>
@@ -518,7 +518,7 @@ export default function Home() {
                           type="button"
                           onClick={() => setCollection(item.value)}
                           className={cn(
-                            'flex items-center justify-between rounded-2xl border px-4 py-3 text-left transition',
+                            'flex transform-gpu items-center justify-between rounded-2xl border px-4 py-3 text-left transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.99]',
                             active
                               ? 'border-amber-200 bg-amber-50 text-slate-950 shadow-sm'
                               : 'border-slate-200 bg-slate-50/70 text-slate-600 hover:border-slate-300 hover:bg-white'
@@ -558,7 +558,7 @@ export default function Home() {
                           type="button"
                           onClick={() => handleQuickAddTag(tag)}
                           className={cn(
-                            'rounded-full border px-3 py-1.5 text-sm transition',
+                            'transform-gpu rounded-full border px-3 py-1.5 text-sm transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]',
                             active
                               ? 'border-amber-200 bg-amber-100 text-slate-950'
                               : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-white'
@@ -614,7 +614,7 @@ export default function Home() {
                           type="button"
                           onClick={() => setDraft((current) => ({ ...current, isPinned: !current.isPinned }))}
                           className={cn(
-                            'flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition',
+                            'flex transform-gpu items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]',
                             draft.isPinned
                               ? 'border-amber-200 bg-amber-100 text-slate-950'
                               : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
@@ -627,7 +627,7 @@ export default function Home() {
                           type="button"
                           onClick={() => setDraft((current) => ({ ...current, isArchived: !current.isArchived }))}
                           className={cn(
-                            'flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition',
+                            'flex transform-gpu items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]',
                             draft.isArchived
                               ? 'border-slate-300 bg-slate-200 text-slate-900'
                               : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
@@ -663,7 +663,7 @@ export default function Home() {
                             placeholder="Add a tag and press Enter"
                             className="border-none bg-transparent px-1 shadow-none focus-visible:ring-0"
                           />
-                          <Button type="button" variant="ghost" size="sm" onClick={() => addTagsFromInput(tagInput)} className="rounded-full">
+                          <Button type="button" variant="ghost" size="sm" onClick={() => addTagsFromInput(tagInput)} className="rounded-full motion-safe:hover:-translate-y-0.5">
                             Add
                           </Button>
                         </div>
@@ -672,14 +672,14 @@ export default function Home() {
                             {draft.tags.map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-100 px-3 py-1.5 text-sm text-slate-800"
+                                className="inline-flex transform-gpu items-center gap-2 rounded-full border border-amber-200 bg-amber-100 px-3 py-1.5 text-sm text-slate-800 transition-all duration-200 ease-out motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
                               >
                                 {tag}
                                 <button
                                   type="button"
                                   onClick={() => setDraft((current) => ({ ...current, tags: current.tags.filter((currentTag) => currentTag !== tag) }))}
                                   aria-label={`Remove ${tag}`}
-                                  className="rounded-full p-0.5 text-slate-500 transition hover:bg-white hover:text-slate-900"
+                                  className="rounded-full p-0.5 text-slate-500 transition-all duration-200 ease-out hover:bg-white hover:text-slate-900 motion-safe:hover:scale-110 motion-safe:active:scale-95"
                                 >
                                   <X className="h-3.5 w-3.5" />
                                 </button>
@@ -701,13 +701,13 @@ export default function Home() {
                               type="button"
                               onClick={() => setDraft((current) => ({ ...current, color: option.value }))}
                               className={cn(
-                                'group flex flex-col items-center gap-2 rounded-2xl border px-2 py-3 text-xs transition',
+                                'group flex transform-gpu flex-col items-center gap-2 rounded-2xl border px-2 py-3 text-xs transition-all duration-200 ease-out motion-safe:hover:-translate-y-1 motion-safe:active:scale-[0.97]',
                                 draft.color === option.value
                                   ? 'border-slate-950 bg-white text-slate-950 shadow-md shadow-slate-200/70 ring-2 ring-slate-950/10'
-                                  : 'border-slate-200 bg-white/80 text-slate-500 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-sm'
+                                  : 'border-slate-200 bg-white/80 text-slate-500 hover:border-slate-300 hover:bg-white hover:shadow-sm'
                               )}
                             >
-                              <span className={cn('h-7 w-7 rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]', NOTE_COLORS[option.value])} />
+                                  <span className={cn('h-7 w-7 rounded-2xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.85)] transition-transform duration-200 group-hover:scale-110', NOTE_COLORS[option.value])} />
                               {option.label}
                             </button>
                           ))}
@@ -722,7 +722,7 @@ export default function Home() {
                         <div
                           {...getRootProps()}
                           className={cn(
-                            'cursor-pointer rounded-3xl border-2 border-dashed px-4 py-6 text-center transition',
+                            'cursor-pointer rounded-3xl border-2 border-dashed px-4 py-6 text-center transition-all duration-200 ease-out transform-gpu motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.99]',
                             isDragActive
                               ? 'border-amber-300 bg-amber-50'
                               : 'border-slate-200 bg-white hover:border-slate-300'
@@ -744,7 +744,7 @@ export default function Home() {
                                   type="button"
                                   onClick={() => handleRemoveImage(index)}
                                   aria-label={`Remove image ${index + 1}`}
-                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white opacity-0 transition group-hover:opacity-100"
+                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white opacity-0 transition-all duration-200 ease-out motion-safe:hover:scale-110 group-hover:opacity-100"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </button>
@@ -762,12 +762,12 @@ export default function Home() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {editingNoteId && (
-                        <Button type="button" variant="outline" onClick={resetDraft} className="gap-2 rounded-full border-slate-200">
+                        <Button type="button" variant="outline" onClick={resetDraft} className="gap-2 rounded-full border-slate-200 motion-safe:hover:-translate-y-0.5">
                           <RefreshCw className="h-4 w-4" />
                           Cancel edit
                         </Button>
                       )}
-                      <Button type="submit" className="gap-2 rounded-full bg-slate-950 px-5 text-white hover:bg-slate-800">
+                      <Button type="submit" className="gap-2 rounded-full bg-slate-950 px-5 text-white hover:bg-slate-800 motion-safe:hover:-translate-y-0.5">
                         {editingNoteId ? <Upload className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                         {editingNoteId ? 'Save note' : 'Create note'}
                       </Button>
@@ -857,9 +857,9 @@ export default function Home() {
       </div>
 
       {viewingNote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-sm motion-note-fade-up">
           <div className="absolute inset-0" onClick={() => setViewingNote(null)} aria-hidden="true" />
-          <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)]">
+          <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] motion-note-pop">
             <div className={cn('border-b px-6 py-5', viewingNote.color ? NOTE_COLORS[viewingNote.color] : 'bg-white')}>
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -877,7 +877,7 @@ export default function Home() {
                     })}
                   </p>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => setViewingNote(null)} className="rounded-full bg-white/70">
+                <Button variant="ghost" size="sm" onClick={() => setViewingNote(null)} className="rounded-full bg-white/70 motion-safe:hover:-translate-y-0.5">
                   <X className="h-4 w-4" />
                 </Button>
               </div>
